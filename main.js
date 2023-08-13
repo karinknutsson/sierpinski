@@ -117,7 +117,7 @@ function generateChildArray(parents, steps) {
 }
 
 // setup first cone & amount of steps
-let steps = 2;
+let steps = 1;
 const parent = createCone(15, 0, -10, 0);
 generateChildArray([[parent]], steps);
 
@@ -154,6 +154,20 @@ controls.enablePan = true;
 controls.enableZoom = true;
 controls.autoRotate = false;
 controls.autoRotateSpeed = 5;
+
+// keyboard controls for steps
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowUp") {
+    steps += 1;
+    renderer.clear();
+    //generateChildArray([[parent]], steps);
+  } else if (e.key === "ArrowDown") {
+    console.log(e);
+    steps -= 1;
+    renderer.clear();
+    //generateChildArray([[parent]], steps);
+  }
+});
 
 // update canvas size, camera and renderer on resize
 window.addEventListener("resize", () => {
