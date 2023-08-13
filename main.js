@@ -58,36 +58,36 @@ function addConeColumn(initRadius, initX, initY, incrZ) {
 // add center cone column
 const iRadius = 10;
 const iX = 0;
-const iY = 0;
+const iY = -10;
 addConeColumn(iRadius, iX, iY, 0);
 
 // add six columns on top of center column
 const jRadius = iRadius / 4;
 
-addConeColumn(jRadius, -jRadius * 2, jRadius * 5, 0);
-addConeColumn(jRadius, jRadius * 2, jRadius * 5, 0);
+addConeColumn(jRadius, -jRadius * 2, iY + jRadius * 5, 0);
+addConeColumn(jRadius, jRadius * 2, iY + jRadius * 5, 0);
 addConeColumn(
   jRadius,
   jRadius * 2 * Math.cos(Math.PI / 3),
-  jRadius * 5,
+  iY + jRadius * 5,
   jRadius * 2 * Math.sin(Math.PI / 3)
 );
 addConeColumn(
   jRadius,
   jRadius * 2 * Math.cos((2 * Math.PI) / 3),
-  jRadius * 5,
+  iY + jRadius * 5,
   jRadius * 2 * Math.sin((2 * Math.PI) / 3)
 );
 addConeColumn(
   jRadius,
   jRadius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
-  jRadius * 5,
+  iY + jRadius * 5,
   jRadius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
 );
 addConeColumn(
   jRadius,
   jRadius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
-  jRadius * 5,
+  iY + jRadius * 5,
   jRadius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
 );
 
