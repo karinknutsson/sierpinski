@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import gsap from "gsap";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 // scene
@@ -11,90 +10,129 @@ const sizes = {
   height: window.innerHeight,
 };
 
-// setup and create cones
-function addConeColumn(initRadius, initX, initY, incrZ) {
-  const cones = [];
+// draw cone
+function drawCone(cone) {
+  const geometry = new THREE.ConeGeometry(
+    cone.radius,
+    cone.radius * 2,
+    cone.segments
+  );
 
-  function createCone(radius, x, y, z) {
-    return {
-      radius: radius,
-      height: radius * 2,
-      segments: 50,
-      x: x,
-      y: y,
-      z: z,
-    };
-  }
-
-  let radius = initRadius;
-  let x = initX;
-  let y = initY;
-  let z = incrZ;
-
-  for (let i = 0; i < 10; i++) {
-    cones.push(createCone(radius, x, y, z));
-    y += radius * 2 * 0.75;
-    radius /= 2;
-  }
-
-  cones.forEach((cone) => {
-    const geometry = new THREE.ConeGeometry(
-      cone.radius,
-      cone.height,
-      cone.segments
-    );
-    const material = new THREE.MeshStandardMaterial({
-      color: "#e666ed",
-      roughness: 0.2,
-    });
-    const m = new THREE.Mesh(geometry, material);
-    m.position.set(cone.x, cone.y, cone.z);
-    m.rotation.x = Math.PI;
-    scene.add(m);
+  const material = new THREE.MeshStandardMaterial({
+    color: "#e666ed",
+    roughness: 0.2,
   });
+
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(cone.x, cone.y, cone.z);
+  mesh.rotation.x = Math.PI;
+  scene.add(mesh);
 }
 
-// addConeColumn(initRadius, initX, initY, incrZ)
-// add center cone column
-const iRadius = 10;
-const iX = 0;
-const iY = -10;
-addConeColumn(iRadius, iX, iY, 0);
+// create cone
+function createCone(radius, x, y, z) {
+  const cone = {
+    radius: radius,
+    segments: 50,
+    x: x,
+    y: y,
+    z: z,
+  };
+  drawCone(cone);
+  return cone;
+}
 
-// add six columns on top of center column
-const jRadius = iRadius / 4;
+// create and draw 1 cone on top and 6 around, half the size
+function createChildren(cone) {
+  const radius = cone.radius / 2;
+  const cones = [];
 
-addConeColumn(jRadius, -jRadius * 2, iY + jRadius * 5, 0);
-addConeColumn(jRadius, jRadius * 2, iY + jRadius * 5, 0);
-addConeColumn(
-  jRadius,
-  jRadius * 2 * Math.cos(Math.PI / 3),
-  iY + jRadius * 5,
-  jRadius * 2 * Math.sin(Math.PI / 3)
-);
-addConeColumn(
-  jRadius,
-  jRadius * 2 * Math.cos((2 * Math.PI) / 3),
-  iY + jRadius * 5,
-  jRadius * 2 * Math.sin((2 * Math.PI) / 3)
-);
-addConeColumn(
-  jRadius,
-  jRadius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
-  iY + jRadius * 5,
-  jRadius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
-);
-addConeColumn(
-  jRadius,
-  jRadius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
-  iY + jRadius * 5,
-  jRadius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
-);
+  // cone on top
+  cones.push(createCone(radius, cone.x, cone.y + cone.radius * 1.484, cone.z));
+
+  // 6 cones around
+  cones.push(
+    createCone(
+      radius,
+      cone.x - radius * 2,
+      cone.y - cone.radius * 0.484,
+      cone.z
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      cone.x + radius * 2,
+      cone.y - cone.radius * 0.484,
+      cone.z
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      cone.x + radius * 2 * Math.cos(Math.PI / 3),
+      cone.y - cone.radius * 0.484,
+      cone.z + radius * 2 * Math.sin(Math.PI / 3)
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      cone.x + radius * 2 * Math.cos((2 * Math.PI) / 3),
+      cone.y - cone.radius * 0.484,
+      cone.z + radius * 2 * Math.sin((2 * Math.PI) / 3)
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      cone.x + radius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
+      cone.y - cone.radius * 0.484,
+      cone.z + radius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      cone.x + radius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
+      cone.y - cone.radius * 0.484,
+      cone.z + radius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
+    )
+  );
+
+  return cones;
+}
+
+// recursive function for generating children according to amount of steps
+function generateChildArray(parents, steps) {
+  if (steps <= 0) {
+    return;
+  }
+  const children = [];
+  parents.forEach((cones) =>
+    cones.forEach((cone) => children.push(createChildren(cone)))
+  );
+
+  generateChildArray(children, steps - 1);
+}
+
+// setup first cone & amount of steps
+function setupCones(steps) {
+  const parent = createCone(15, 0, -10, 0);
+  generateChildArray([[parent]], steps);
+}
+
+// start building cones
+let steps = 1;
+setupCones(steps);
 
 // light
-const highLight = new THREE.PointLight(0xff6600, 1, 100);
-highLight.position.set(10, 0, 20);
+const highLight = new THREE.PointLight(0xffff00, 1, 100);
+highLight.position.set(10, 10, 20);
 scene.add(highLight);
+const medLight = new THREE.PointLight(0xff0000, 1, 300);
+medLight.position.set(-20, -20, 20);
+scene.add(medLight);
 const ambientLight = new THREE.AmbientLight(0x6666ff);
 scene.add(ambientLight);
 
@@ -122,6 +160,21 @@ controls.enableZoom = true;
 controls.autoRotate = false;
 controls.autoRotateSpeed = 5;
 
+// keyboard controls for steps
+document.addEventListener("keydown", (e) => {
+  if (steps < 5 && e.key === "ArrowUp") {
+    steps += 1;
+    const filtered = scene.children.filter((child) => !child.isMesh);
+    scene.children = filtered;
+    setupCones(steps);
+  } else if (steps > 0 && e.key === "ArrowDown") {
+    steps -= 1;
+    const filtered = scene.children.filter((child) => !child.isMesh);
+    scene.children = filtered;
+    setupCones(steps);
+  }
+});
+
 // update canvas size, camera and renderer on resize
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
@@ -132,13 +185,8 @@ window.addEventListener("resize", () => {
 });
 
 const loop = () => {
-  //  light.position.z += 0.02;
   controls.update();
   renderer.render(scene, camera);
   window.requestAnimationFrame(loop);
 };
 loop();
-
-// timeline
-// const tl = gsap.timeline({ defaults: { duration: 1 } } );
-// tl.fromTo(mesh.scale, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
