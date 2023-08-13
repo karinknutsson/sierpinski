@@ -43,48 +43,62 @@ function createCone(radius, x, y, z) {
 }
 
 // create and draw 1 cone on top and 6 around, half the size
-function createCones(parentRadius, parentY) {
+function createChildren(parentRadius, parentX, parentY, parentZ) {
   const radius = parentRadius / 2;
   const cones = [];
 
   // cone on top
-  cones.push(createCone(radius, 0, parentY + parentRadius * 1.5, 0));
+  cones.push(
+    createCone(radius, parentX, parentY + parentRadius * 1.5, parentZ)
+  );
 
   // 6 cones around
   cones.push(
-    createCone(radius, -radius * 2, parentY - parentRadius * 0.484, 0)
-  );
-  cones.push(createCone(radius, radius * 2, parentY - parentRadius * 0.484, 0));
-  cones.push(
     createCone(
       radius,
-      radius * 2 * Math.cos(Math.PI / 3),
+      parentX - radius * 2,
       parentY - parentRadius * 0.484,
-      radius * 2 * Math.sin(Math.PI / 3)
+      parentZ
     )
   );
   cones.push(
     createCone(
       radius,
-      radius * 2 * Math.cos((2 * Math.PI) / 3),
+      parentX + radius * 2,
       parentY - parentRadius * 0.484,
-      radius * 2 * Math.sin((2 * Math.PI) / 3)
+      parentZ
     )
   );
   cones.push(
     createCone(
       radius,
-      radius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
+      parentX + radius * 2 * Math.cos(Math.PI / 3),
       parentY - parentRadius * 0.484,
-      radius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
+      parentZ + radius * 2 * Math.sin(Math.PI / 3)
     )
   );
   cones.push(
     createCone(
       radius,
-      radius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
+      parentX + radius * 2 * Math.cos((2 * Math.PI) / 3),
       parentY - parentRadius * 0.484,
-      radius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
+      parentZ + radius * 2 * Math.sin((2 * Math.PI) / 3)
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      parentX + radius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
+      parentY - parentRadius * 0.484,
+      parentZ + radius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      parentX + radius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
+      parentY - parentRadius * 0.484,
+      parentZ + radius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
     )
   );
 
@@ -92,7 +106,17 @@ function createCones(parentRadius, parentY) {
 }
 
 const initCone = createCone(10, 0, -10, 0);
-const childCones = createCones(initCone.radius, initCone.y);
+const childCones = createChildren(
+  initCone.radius,
+  initCone.x,
+  initCone.y,
+  initCone.z
+);
+childCones.forEach((cone) =>
+  createChildren(cone.radius, cone.x, cone.y, cone.z)
+);
+
+// childCones.forEach((cone) => createChildren(cone));
 
 // light
 const highLight = new THREE.PointLight(0xff6600, 1, 100);
