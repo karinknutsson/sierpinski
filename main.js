@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import gsap from "gsap";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 // scene
@@ -11,85 +10,89 @@ const sizes = {
   height: window.innerHeight,
 };
 
-// setup and create cones
-function addConeColumn(initRadius, initX, initY, incrZ) {
-  const cones = [];
+// draw cone
+function drawCone(cone) {
+  const geometry = new THREE.ConeGeometry(
+    cone.radius,
+    cone.radius * 2,
+    cone.segments
+  );
 
-  function createCone(radius, x, y, z) {
-    return {
-      radius: radius,
-      height: radius * 2,
-      segments: 50,
-      x: x,
-      y: y,
-      z: z,
-    };
-  }
-
-  let radius = initRadius;
-  let x = initX;
-  let y = initY;
-  let z = incrZ;
-
-  for (let i = 0; i < 10; i++) {
-    cones.push(createCone(radius, x, y, z));
-    y += radius * 2 * 0.75;
-    radius /= 2;
-  }
-
-  cones.forEach((cone) => {
-    const geometry = new THREE.ConeGeometry(
-      cone.radius,
-      cone.height,
-      cone.segments
-    );
-    const material = new THREE.MeshStandardMaterial({
-      color: "#e666ed",
-      roughness: 0.2,
-    });
-    const m = new THREE.Mesh(geometry, material);
-    m.position.set(cone.x, cone.y, cone.z);
-    m.rotation.x = Math.PI;
-    scene.add(m);
+  const material = new THREE.MeshStandardMaterial({
+    color: "#e666ed",
+    roughness: 0.2,
   });
+
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(cone.x, cone.y, cone.z);
+  mesh.rotation.x = Math.PI;
+  scene.add(mesh);
 }
 
-// addConeColumn(initRadius, initX, initY, incrZ)
-// add center cone column
-const iRadius = 10;
-const iX = 0;
-const iY = -10;
-addConeColumn(iRadius, iX, iY, 0);
+// create cone
+function createCone(radius, x, y, z) {
+  const cone = {
+    radius: radius,
+    segments: 50,
+    x: x,
+    y: y,
+    z: z,
+  };
+  drawCone(cone);
+  return cone;
+}
 
-// add six columns on top of center column
-const jRadius = iRadius / 4;
+// create and draw 1 cone on top and 6 around, half the size
+function createCones(parentRadius, parentY) {
+  const radius = parentRadius / 2;
+  const cones = [];
 
-addConeColumn(jRadius, -jRadius * 2, iY + jRadius * 5, 0);
-addConeColumn(jRadius, jRadius * 2, iY + jRadius * 5, 0);
-addConeColumn(
-  jRadius,
-  jRadius * 2 * Math.cos(Math.PI / 3),
-  iY + jRadius * 5,
-  jRadius * 2 * Math.sin(Math.PI / 3)
-);
-addConeColumn(
-  jRadius,
-  jRadius * 2 * Math.cos((2 * Math.PI) / 3),
-  iY + jRadius * 5,
-  jRadius * 2 * Math.sin((2 * Math.PI) / 3)
-);
-addConeColumn(
-  jRadius,
-  jRadius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
-  iY + jRadius * 5,
-  jRadius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
-);
-addConeColumn(
-  jRadius,
-  jRadius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
-  iY + jRadius * 5,
-  jRadius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
-);
+  // cone on top
+  cones.push(createCone(radius, 0, parentY + parentRadius * 1.5, 0));
+
+  // 6 cones around
+  cones.push(
+    createCone(radius, -radius * 2, parentY - parentRadius * 0.484, 0)
+  );
+  cones.push(createCone(radius, radius * 2, parentY - parentRadius * 0.484, 0));
+  cones.push(
+    createCone(
+      radius,
+      radius * 2 * Math.cos(Math.PI / 3),
+      parentY - parentRadius * 0.484,
+      radius * 2 * Math.sin(Math.PI / 3)
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      radius * 2 * Math.cos((2 * Math.PI) / 3),
+      parentY - parentRadius * 0.484,
+      radius * 2 * Math.sin((2 * Math.PI) / 3)
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      radius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
+      parentY - parentRadius * 0.484,
+      radius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
+    )
+  );
+  cones.push(
+    createCone(
+      radius,
+      radius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
+      parentY - parentRadius * 0.484,
+      radius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
+    )
+  );
+
+  return cones;
+}
+
+const initCone = createCone(10, 0, -10, 0);
+const childCones = createCones(initCone.radius, initCone.y);
 
 // light
 const highLight = new THREE.PointLight(0xff6600, 1, 100);
