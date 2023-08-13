@@ -56,16 +56,40 @@ function addConeColumn(initRadius, initX, initY, incrZ) {
 
 // addConeColumn(initRadius, initX, initY, incrZ)
 // add center cone column
-const initRadius = 10;
-const initX = 0;
-const initY = 0;
-addConeColumn(initRadius, initX, initY, 0);
+const iRadius = 10;
+const iX = 0;
+const iY = 0;
+addConeColumn(iRadius, iX, iY, 0);
 
-// add six columns on top of center
-addConeColumn(initRadius / 4, -5, 12.5, 0);
-addConeColumn(initRadius / 4, 5, 12.5, 0);
-addConeColumn(initRadius / 4, -2.5, 12.5, 4);
-addConeColumn(initRadius / 4, 2.5, 12.5, 4);
+// add six columns on top of center column
+const jRadius = iRadius / 4;
+
+addConeColumn(jRadius, -jRadius * 2, jRadius * 5, 0);
+addConeColumn(jRadius, jRadius * 2, jRadius * 5, 0);
+addConeColumn(
+  jRadius,
+  jRadius * 2 * Math.cos(Math.PI / 3),
+  jRadius * 5,
+  jRadius * 2 * Math.sin(Math.PI / 3)
+);
+addConeColumn(
+  jRadius,
+  jRadius * 2 * Math.cos((2 * Math.PI) / 3),
+  jRadius * 5,
+  jRadius * 2 * Math.sin((2 * Math.PI) / 3)
+);
+addConeColumn(
+  jRadius,
+  jRadius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
+  jRadius * 5,
+  jRadius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
+);
+addConeColumn(
+  jRadius,
+  jRadius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
+  jRadius * 5,
+  jRadius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
+);
 
 // light
 const highLight = new THREE.PointLight(0xff6600, 1, 100);
