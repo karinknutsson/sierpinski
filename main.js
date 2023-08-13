@@ -160,12 +160,11 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowUp") {
     steps += 1;
     renderer.clear();
-    //generateChildArray([[parent]], steps);
+    generateChildArray([[parent]], steps);
   } else if (e.key === "ArrowDown") {
-    console.log(e);
     steps -= 1;
     renderer.clear();
-    //generateChildArray([[parent]], steps);
+    generateChildArray([[parent]], steps);
   }
 });
 
