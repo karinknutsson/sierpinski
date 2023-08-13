@@ -54,16 +54,25 @@ function addConeColumn(initRadius, initX, initY, incrZ) {
   });
 }
 
-addConeColumn(10, 0, 0, 0);
-addConeColumn(2.5, -5, 12.5, 0);
-addConeColumn(2.5, 5, 12.5, 0);
-addConeColumn(2.5, -2.5, 12.5, 4);
-addConeColumn(2.5, 2.5, 12.5, 4);
+// addConeColumn(initRadius, initX, initY, incrZ)
+// add center cone column
+const initRadius = 10;
+const initX = 0;
+const initY = 0;
+addConeColumn(initRadius, initX, initY, 0);
+
+// add six columns on top of center
+addConeColumn(initRadius / 4, -5, 12.5, 0);
+addConeColumn(initRadius / 4, 5, 12.5, 0);
+addConeColumn(initRadius / 4, -2.5, 12.5, 4);
+addConeColumn(initRadius / 4, 2.5, 12.5, 4);
 
 // light
-const light = new THREE.PointLight(0xffffff, 1, 100);
-light.position.set(-5, 20, 20);
-scene.add(light);
+const highLight = new THREE.PointLight(0xff6600, 1, 100);
+highLight.position.set(10, 0, 20);
+scene.add(highLight);
+const ambientLight = new THREE.AmbientLight(0x6666ff);
+scene.add(ambientLight);
 
 // camera
 const camera = new THREE.PerspectiveCamera(
