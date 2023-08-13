@@ -48,7 +48,7 @@ function createChildren(cone) {
   const cones = [];
 
   // cone on top
-  cones.push(createCone(radius, cone.x, cone.y + cone.radius * 1.5, cone.z));
+  cones.push(createCone(radius, cone.x, cone.y + cone.radius * 1.484, cone.z));
 
   // 6 cones around
   cones.push(
@@ -103,23 +103,31 @@ function createChildren(cone) {
   return cones;
 }
 
-const parent = createCone(20, 0, -10, 0);
+// recursive function for generating children according to amount of steps
+function generateChildArray(parents, steps) {
+  if (steps <= 0) {
+    return;
+  }
+  const children = [];
+  parents.forEach((cones) =>
+    cones.forEach((cone) => children.push(createChildren(cone)))
+  );
 
-const children = createChildren(parent);
+  generateChildArray(children, steps - 1);
+}
 
-let grandChildren = [];
-children.forEach((cone) => {
-  grandChildren.push(createChildren(cone));
-});
-
-grandChildren.forEach((grandChild) => {
-  grandChild.forEach((cone) => createChildren(cone));
-});
+// setup first cone & amount of steps
+let steps = 2;
+const parent = createCone(15, 0, -10, 0);
+generateChildArray([[parent]], steps);
 
 // light
-const highLight = new THREE.PointLight(0xff6600, 1, 100);
-highLight.position.set(10, 0, 20);
+const highLight = new THREE.PointLight(0xffff00, 1, 100);
+highLight.position.set(10, 10, 20);
 scene.add(highLight);
+const medLight = new THREE.PointLight(0xff0000, 1, 300);
+medLight.position.set(-20, -20, 20);
+scene.add(medLight);
 const ambientLight = new THREE.AmbientLight(0x6666ff);
 scene.add(ambientLight);
 
@@ -157,13 +165,8 @@ window.addEventListener("resize", () => {
 });
 
 const loop = () => {
-  //  light.position.z += 0.02;
   controls.update();
   renderer.render(scene, camera);
   window.requestAnimationFrame(loop);
 };
 loop();
-
-// timeline
-// const tl = gsap.timeline({ defaults: { duration: 1 } } );
-// tl.fromTo(mesh.scale, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
