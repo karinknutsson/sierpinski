@@ -21,12 +21,12 @@ body {
 }
 
 .info-left {
-  bottom: 16px;
+  top: 16px;
   left: 32px;
 }
 
 .info-right {
-  bottom: 16px;
+  top: 16px;
   right: 32px;
 }
 
