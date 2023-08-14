@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap");
+
 html,
 body {
   margin: 0;
@@ -7,6 +9,25 @@ body {
 
 body {
   background: black;
+}
+
+.info-left,
+.info-right {
+  position: absolute;
+  z-index: 10;
+  color: #aaaaaa;
+  font-family: "Open Sans", sans-serif;
+  font-size: 12pt;
+}
+
+.info-left {
+  bottom: 16px;
+  left: 32px;
+}
+
+.info-right {
+  bottom: 16px;
+  right: 32px;
 }
 
 .webgl {
