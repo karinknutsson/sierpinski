@@ -10,50 +10,75 @@ const sizes = {
   height: window.innerHeight,
 };
 
-// draw cone
-function drawCone(cone) {
-  const geometry = new THREE.ConeGeometry(
-    cone.radius,
-    cone.radius * 2,
-    cone.segments
-  );
+// draw cones
+function drawCones(children) {
+  const cones = children.flat();
+  const length = cones.length;
 
   const material = new THREE.MeshStandardMaterial({
     color: "#e666ed",
     roughness: 0.2,
   });
 
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(cone.x, cone.y, cone.z);
-  mesh.rotation.x = Math.PI;
+  const mesh = new THREE.InstancedMesh(
+    new THREE.ConeGeometry(cones[0].radius, cones[0].height, cones[0].segments),
+    material,
+    length
+  );
+
   scene.add(mesh);
+
+  let dummy = new THREE.Object3D();
+
+  for (let i = 0; i < length; i++) {
+    dummy.position.set(cones[i].x, cones[i].y, cones[i].z);
+    dummy.rotation.x = Math.PI;
+    dummy.updateMatrix();
+    mesh.setMatrixAt(i, dummy.matrix);
+  }
+
+  mesh.instanceMatrix.needsUpdate = true;
 }
 
 // create cone
-function createCone(radius, x, y, z) {
+function createCone(radius, height, segments, x, y, z) {
   const cone = {
     radius: radius,
-    segments: 50,
+    height: height,
+    segments: segments,
     x: x,
     y: y,
     z: z,
   };
-  drawCone(cone);
+  //drawCone(cone);
   return cone;
 }
 
-// create and draw 1 cone on top and 6 around, half the size
+// create 1 cone on top and 6 around, half the size
 function createChildren(cone) {
   const radius = cone.radius / 2;
+  const height = radius * 2;
+  const segments = 346 - 42 * stepCount;
   const cones = [];
 
   // cone on top
-  cones.push(createCone(radius, cone.x, cone.y + cone.radius * 1.484, cone.z));
+  cones.push(
+    createCone(
+      radius,
+      height,
+      segments,
+      cone.x,
+      cone.y + cone.radius * 1.484,
+      cone.z
+    )
+  );
 
   // 6 cones around
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x - radius * 2,
       cone.y - cone.radius * 0.484,
       cone.z
@@ -62,6 +87,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2,
       cone.y - cone.radius * 0.484,
       cone.z
@@ -70,6 +97,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2 * Math.cos(Math.PI / 3),
       cone.y - cone.radius * 0.484,
       cone.z + radius * 2 * Math.sin(Math.PI / 3)
@@ -78,6 +107,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2 * Math.cos((2 * Math.PI) / 3),
       cone.y - cone.radius * 0.484,
       cone.z + radius * 2 * Math.sin((2 * Math.PI) / 3)
@@ -86,6 +117,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
       cone.y - cone.radius * 0.484,
       cone.z + radius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
@@ -94,6 +127,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
       cone.y - cone.radius * 0.484,
       cone.z + radius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
@@ -103,28 +138,31 @@ function createChildren(cone) {
   return cones;
 }
 
-// recursive function for generating children according to amount of steps
-function generateChildArray(parents, steps) {
-  if (steps <= 0) {
+// recursive function for generating children according to amount of stepCount
+function generateChildArray(parents, stepCount) {
+  if (stepCount < 1) {
     return;
   }
+
   const children = [];
   parents.forEach((cones) =>
     cones.forEach((cone) => children.push(createChildren(cone)))
   );
 
-  generateChildArray(children, steps - 1);
+  drawCones(children);
+  generateChildArray(children, stepCount - 1);
 }
 
-// setup first cone & amount of steps
-function setupCones(steps) {
-  const parent = createCone(15, 0, -10, 0);
-  generateChildArray([[parent]], steps);
+// setup first cone & amount of stepCount
+function setupCones(stepCount) {
+  const parent = [[createCone(15, 30, 304, 0, -10, 0)]];
+  drawCones(parent);
+  generateChildArray(parent, stepCount);
 }
 
 // start building cones
-let steps = 1;
-setupCones(steps);
+let stepCount = 1;
+setupCones(stepCount);
 
 // light
 const highLight = new THREE.PointLight(0xffff00, 1, 100);
@@ -160,18 +198,18 @@ controls.enableZoom = true;
 controls.autoRotate = false;
 controls.autoRotateSpeed = 5;
 
-// keyboard controls for steps
+// keyboard controls for stepCount
 document.addEventListener("keydown", (e) => {
-  if (steps < 5 && e.key === "ArrowUp") {
-    steps += 1;
+  if (stepCount < 7 && e.key === "ArrowUp") {
+    stepCount += 1;
     const filtered = scene.children.filter((child) => !child.isMesh);
     scene.children = filtered;
-    setupCones(steps);
-  } else if (steps > 0 && e.key === "ArrowDown") {
-    steps -= 1;
+    setupCones(stepCount);
+  } else if (stepCount > 0 && e.key === "ArrowDown") {
+    stepCount -= 1;
     const filtered = scene.children.filter((child) => !child.isMesh);
     scene.children = filtered;
-    setupCones(steps);
+    setupCones(stepCount);
   }
 });
 
