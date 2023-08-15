@@ -58,7 +58,7 @@ function createCone(radius, height, segments, x, y, z) {
 function createChildren(cone) {
   const radius = cone.radius / 2;
   const height = radius * 2;
-  const segments = radius * 20;
+  const segments = 346 - 42 * stepCount;
   const cones = [];
 
   // cone on top
@@ -140,28 +140,28 @@ function createChildren(cone) {
 
 // recursive function for generating children according to amount of stepCount
 function generateChildArray(parents, stepCount) {
-  if (stepCount <= 0) {
+  if (stepCount < 1) {
     return;
   }
-
-  drawCones(parents);
 
   const children = [];
   parents.forEach((cones) =>
     cones.forEach((cone) => children.push(createChildren(cone)))
   );
 
+  drawCones(children);
   generateChildArray(children, stepCount - 1);
 }
 
 // setup first cone & amount of stepCount
 function setupCones(stepCount) {
-  const parent = createCone(15, 30, 15 * 20, 0, -10, 0);
-  generateChildArray([[parent]], stepCount);
+  const parent = [[createCone(15, 30, 304, 0, -10, 0)]];
+  drawCones(parent);
+  generateChildArray(parent, stepCount);
 }
 
 // start building cones
-let stepCount = 2;
+let stepCount = 1;
 setupCones(stepCount);
 
 // light
@@ -200,7 +200,7 @@ controls.autoRotateSpeed = 5;
 
 // keyboard controls for stepCount
 document.addEventListener("keydown", (e) => {
-  if (stepCount < 5 && e.key === "ArrowUp") {
+  if (stepCount < 7 && e.key === "ArrowUp") {
     stepCount += 1;
     const filtered = scene.children.filter((child) => !child.isMesh);
     scene.children = filtered;
