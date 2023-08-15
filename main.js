@@ -12,7 +12,6 @@ const sizes = {
 
 // draw cone
 function drawCone(cone) {
-  console.log(cone);
   const geometry = new THREE.ConeGeometry(
     cone.radius,
     cone.height,
@@ -58,8 +57,6 @@ function drawCones(children) {
   }
 
   mesh.instanceMatrix.needsUpdate = true;
-
-  console.log(mesh);
 }
 
 // create cone
@@ -165,13 +162,13 @@ function generateChildArray(parents, stepCount) {
   if (stepCount <= 0) {
     return;
   }
+
+  drawCones(parents);
+
   const children = [];
   parents.forEach((cones) =>
     cones.forEach((cone) => children.push(createChildren(cone)))
   );
-
-  console.log(children);
-  drawCones(children);
 
   generateChildArray(children, stepCount - 1);
 }
@@ -183,7 +180,7 @@ function setupCones(stepCount) {
 }
 
 // start building cones
-let stepCount = 1;
+let stepCount = 2;
 setupCones(stepCount);
 
 // light
