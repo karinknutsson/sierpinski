@@ -33,7 +33,7 @@ function drawCone(cone) {
 function createCone(radius, x, y, z) {
   const cone = {
     radius: radius,
-    segments: 50,
+    segments: radius * 20,
     x: x,
     y: y,
     z: z,
