@@ -33,6 +33,7 @@ function drawCone(cone) {
 // draw cones
 function drawCones(children) {
   const cones = children.flat();
+  const length = cones.length;
 
   const material = new THREE.MeshStandardMaterial({
     color: "#e666ed",
@@ -42,15 +43,23 @@ function drawCones(children) {
   const mesh = new THREE.InstancedMesh(
     new THREE.ConeGeometry(cones[0].radius, cones[0].height, cones[0].segments),
     material,
-    cones.length
+    length
   );
 
-  // cones.forEach((cone) => {
-  //   const geometry = new THREE.ConeGeometry(
-  //     cone.radius,
-  //     cone.height,
-  //     cone.segments
-  //   );
+  scene.add(mesh);
+
+  let dummy = new THREE.Object3D();
+
+  for (let i = 0; i < length; i++) {
+    dummy.position.set(cones[i].x, cones[i].y, cones[i].z);
+    dummy.rotation.x = Math.PI;
+    dummy.updateMatrix();
+    mesh.setMatrixAt(i, dummy.matrix);
+  }
+
+  mesh.instanceMatrix.needsUpdate = true;
+
+  console.log(mesh);
 }
 
 // create cone
@@ -67,7 +76,7 @@ function createCone(radius, height, segments, x, y, z) {
   return cone;
 }
 
-// create and draw 1 cone on top and 6 around, half the size
+// create 1 cone on top and 6 around, half the size
 function createChildren(cone) {
   const radius = cone.radius / 2;
   const height = radius * 2;
