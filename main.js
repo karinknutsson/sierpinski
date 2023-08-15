@@ -12,6 +12,7 @@ const sizes = {
 
 // draw cone
 function drawCone(cone) {
+  console.log(cone);
   const geometry = new THREE.ConeGeometry(
     cone.radius,
     cone.height,
@@ -29,6 +30,29 @@ function drawCone(cone) {
   scene.add(mesh);
 }
 
+// draw cones
+function drawCones(children) {
+  const cones = children.flat();
+
+  const material = new THREE.MeshStandardMaterial({
+    color: "#e666ed",
+    roughness: 0.2,
+  });
+
+  const mesh = new THREE.InstancedMesh(
+    new THREE.ConeGeometry(cones[0].radius, cones[0].height, cones[0].segments),
+    material,
+    cones.length
+  );
+
+  // cones.forEach((cone) => {
+  //   const geometry = new THREE.ConeGeometry(
+  //     cone.radius,
+  //     cone.height,
+  //     cone.segments
+  //   );
+}
+
 // create cone
 function createCone(radius, height, segments, x, y, z) {
   const cone = {
@@ -39,7 +63,7 @@ function createCone(radius, height, segments, x, y, z) {
     y: y,
     z: z,
   };
-  drawCone(cone);
+  //drawCone(cone);
   return cone;
 }
 
@@ -127,9 +151,9 @@ function createChildren(cone) {
   return cones;
 }
 
-// recursive function for generating children according to amount of steps
-function generateChildArray(parents, steps) {
-  if (steps <= 0) {
+// recursive function for generating children according to amount of stepCount
+function generateChildArray(parents, stepCount) {
+  if (stepCount <= 0) {
     return;
   }
   const children = [];
@@ -137,18 +161,21 @@ function generateChildArray(parents, steps) {
     cones.forEach((cone) => children.push(createChildren(cone)))
   );
 
-  generateChildArray(children, steps - 1);
+  console.log(children);
+  drawCones(children);
+
+  generateChildArray(children, stepCount - 1);
 }
 
-// setup first cone & amount of steps
-function setupCones(steps) {
-  const parent = createCone(15, 0, -10, 0);
-  generateChildArray([[parent]], steps);
+// setup first cone & amount of stepCount
+function setupCones(stepCount) {
+  const parent = createCone(15, 30, 15 * 20, 0, -10, 0);
+  generateChildArray([[parent]], stepCount);
 }
 
 // start building cones
-let steps = 1;
-setupCones(steps);
+let stepCount = 1;
+setupCones(stepCount);
 
 // light
 const highLight = new THREE.PointLight(0xffff00, 1, 100);
@@ -184,18 +211,18 @@ controls.enableZoom = true;
 controls.autoRotate = false;
 controls.autoRotateSpeed = 5;
 
-// keyboard controls for steps
+// keyboard controls for stepCount
 document.addEventListener("keydown", (e) => {
-  if (steps < 5 && e.key === "ArrowUp") {
-    steps += 1;
+  if (stepCount < 5 && e.key === "ArrowUp") {
+    stepCount += 1;
     const filtered = scene.children.filter((child) => !child.isMesh);
     scene.children = filtered;
-    setupCones(steps);
-  } else if (steps > 0 && e.key === "ArrowDown") {
-    steps -= 1;
+    setupCones(stepCount);
+  } else if (stepCount > 0 && e.key === "ArrowDown") {
+    stepCount -= 1;
     const filtered = scene.children.filter((child) => !child.isMesh);
     scene.children = filtered;
-    setupCones(steps);
+    setupCones(stepCount);
   }
 });
 
