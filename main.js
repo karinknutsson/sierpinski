@@ -14,7 +14,7 @@ const sizes = {
 function drawCone(cone) {
   const geometry = new THREE.ConeGeometry(
     cone.radius,
-    cone.radius * 2,
+    cone.height,
     cone.segments
   );
 
@@ -30,10 +30,11 @@ function drawCone(cone) {
 }
 
 // create cone
-function createCone(radius, x, y, z) {
+function createCone(radius, height, segments, x, y, z) {
   const cone = {
     radius: radius,
-    segments: radius * 20,
+    height: height,
+    segments: segments,
     x: x,
     y: y,
     z: z,
@@ -45,15 +46,28 @@ function createCone(radius, x, y, z) {
 // create and draw 1 cone on top and 6 around, half the size
 function createChildren(cone) {
   const radius = cone.radius / 2;
+  const height = radius * 2;
+  const segments = radius * 20;
   const cones = [];
 
   // cone on top
-  cones.push(createCone(radius, cone.x, cone.y + cone.radius * 1.484, cone.z));
+  cones.push(
+    createCone(
+      radius,
+      height,
+      segments,
+      cone.x,
+      cone.y + cone.radius * 1.484,
+      cone.z
+    )
+  );
 
   // 6 cones around
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x - radius * 2,
       cone.y - cone.radius * 0.484,
       cone.z
@@ -62,6 +76,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2,
       cone.y - cone.radius * 0.484,
       cone.z
@@ -70,6 +86,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2 * Math.cos(Math.PI / 3),
       cone.y - cone.radius * 0.484,
       cone.z + radius * 2 * Math.sin(Math.PI / 3)
@@ -78,6 +96,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2 * Math.cos((2 * Math.PI) / 3),
       cone.y - cone.radius * 0.484,
       cone.z + radius * 2 * Math.sin((2 * Math.PI) / 3)
@@ -86,6 +106,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2 * Math.cos(Math.PI * (1 + 1 / 3)),
       cone.y - cone.radius * 0.484,
       cone.z + radius * 2 * Math.sin(Math.PI * (1 + 1 / 3))
@@ -94,6 +116,8 @@ function createChildren(cone) {
   cones.push(
     createCone(
       radius,
+      height,
+      segments,
       cone.x + radius * 2 * Math.cos(Math.PI * (1 + 2 / 3)),
       cone.y - cone.radius * 0.484,
       cone.z + radius * 2 * Math.sin(Math.PI * (1 + 2 / 3))
