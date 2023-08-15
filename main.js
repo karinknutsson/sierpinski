@@ -10,9 +10,12 @@ const sizes = {
   height: window.innerHeight,
 };
 
+// keep track of created cones
+let conesInCurrentMesh = [];
+let conesInPreviousMesh = [];
+
 // draw cones
-function drawCones(children) {
-  const cones = children.flat();
+function drawCones(cones) {
   const length = cones.length;
 
   const material = new THREE.MeshStandardMaterial({
@@ -138,31 +141,11 @@ function createChildren(cone) {
   return cones;
 }
 
-// recursive function for generating children according to amount of stepCount
-function generateChildArray(parents, stepCount) {
-  if (stepCount < 1) {
-    return;
-  }
-
-  const children = [];
-  parents.forEach((cones) =>
-    cones.forEach((cone) => children.push(createChildren(cone)))
-  );
-
-  drawCones(children);
-  generateChildArray(children, stepCount - 1);
-}
-
-// setup first cone & amount of stepCount
-function setupCones(stepCount) {
-  const parent = [[createCone(15, 30, 304, 0, -10, 0)]];
-  drawCones(parent);
-  generateChildArray(parent, stepCount);
-}
-
 // start building cones
 let stepCount = 1;
-setupCones(stepCount);
+const firstCone = createCone(15, 30, 304, 0, -10, 0);
+conesInCurrentMesh.push(firstCone);
+drawCones(conesInCurrentMesh);
 
 // light
 const highLight = new THREE.PointLight(0xffff00, 1, 100);
@@ -201,11 +184,18 @@ controls.autoRotateSpeed = 5;
 // keyboard controls for stepCount
 document.addEventListener("keydown", (e) => {
   if (stepCount < 7 && e.key === "ArrowUp") {
-    // scene.children.splice(stepCount, 0, newMesh);
+    conesInPreviousMesh = conesInCurrentMesh;
+    const children = [];
+    conesInCurrentMesh.forEach((cone) => children.push(createChildren(cone)));
+    conesInCurrentMesh = children.flat();
+    drawCones(conesInCurrentMesh);
     stepCount += 1;
-  } else if (stepCount > 0 && e.key === "ArrowDown") {
-    scene.children.splice(stepCount, 1);
+  } else if (stepCount > 1 && e.key === "ArrowDown") {
+    conesInCurrentMesh = conesInPreviousMesh;
+    scene.children.splice(3 + stepCount, 1);
     stepCount -= 1;
+  } else if (stepCount === 1 && e.key === "ArrowDown") {
+    conesInCurrentMesh = [firstCone];
   }
 });
 
