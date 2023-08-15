@@ -10,25 +10,6 @@ const sizes = {
   height: window.innerHeight,
 };
 
-// draw cone
-function drawCone(cone) {
-  const geometry = new THREE.ConeGeometry(
-    cone.radius,
-    cone.height,
-    cone.segments
-  );
-
-  const material = new THREE.MeshStandardMaterial({
-    color: "#e666ed",
-    roughness: 0.2,
-  });
-
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(cone.x, cone.y, cone.z);
-  mesh.rotation.x = Math.PI;
-  scene.add(mesh);
-}
-
 // draw cones
 function drawCones(children) {
   const cones = children.flat();
