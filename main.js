@@ -201,15 +201,11 @@ controls.autoRotateSpeed = 5;
 // keyboard controls for stepCount
 document.addEventListener("keydown", (e) => {
   if (stepCount < 7 && e.key === "ArrowUp") {
+    // scene.children.splice(stepCount, 0, newMesh);
     stepCount += 1;
-    const filtered = scene.children.filter((child) => !child.isMesh);
-    scene.children = filtered;
-    setupCones(stepCount);
   } else if (stepCount > 0 && e.key === "ArrowDown") {
+    scene.children.splice(stepCount, 1);
     stepCount -= 1;
-    const filtered = scene.children.filter((child) => !child.isMesh);
-    scene.children = filtered;
-    setupCones(stepCount);
   }
 });
 
