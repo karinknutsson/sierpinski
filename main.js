@@ -183,7 +183,7 @@ controls.autoRotateSpeed = 5;
 
 // keyboard controls for stepCount
 document.addEventListener("keydown", (e) => {
-  if (stepCount < 7 && e.key === "ArrowUp") {
+  if (stepCount < 8 && e.key === "ArrowUp") {
     conesInPreviousMesh = conesInCurrentMesh;
     const children = [];
     conesInCurrentMesh.forEach((cone) => children.push(createChildren(cone)));
