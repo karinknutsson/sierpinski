@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap");
 
 html,
 body {
@@ -17,6 +17,7 @@ body {
   z-index: 10;
   color: #aaaaaa;
   font-family: "Open Sans", sans-serif;
+  font-weight: 600;
   font-size: 12pt;
 }
 
