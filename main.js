@@ -10,12 +10,9 @@ const sizes = {
   height: window.innerHeight,
 };
 
-// keep track of created cones
-let conesInCurrentMesh = [];
-let conesInPreviousMesh = [];
-
 // draw cones
 function drawCones(cones) {
+  cones = cones.flat();
   const length = cones.length;
 
   const material = new THREE.MeshStandardMaterial({
@@ -143,9 +140,8 @@ function createChildren(cone) {
 
 // start building cones
 let stepCount = 1;
-const firstCone = createCone(15, 30, 304, 0, -10, 0);
-conesInCurrentMesh.push(firstCone);
-drawCones(conesInCurrentMesh);
+const createdCones = [[createCone(15, 30, 304, 0, -10, 0)]];
+drawCones(createdCones);
 
 // light
 const highLight = new THREE.PointLight(0xffff00, 1, 100);
@@ -184,18 +180,16 @@ controls.autoRotateSpeed = 5;
 // keyboard controls for stepCount
 document.addEventListener("keydown", (e) => {
   if (stepCount < 8 && e.key === "ArrowUp") {
-    conesInPreviousMesh = conesInCurrentMesh;
     const children = [];
-    conesInCurrentMesh.forEach((cone) => children.push(createChildren(cone)));
-    conesInCurrentMesh = children.flat();
-    drawCones(conesInCurrentMesh);
+    createdCones[stepCount - 1].forEach((cone) =>
+      children.push(createChildren(cone))
+    );
+    createdCones.push(children.flat());
+    drawCones(createdCones[stepCount]);
     stepCount += 1;
   } else if (stepCount > 1 && e.key === "ArrowDown") {
-    conesInCurrentMesh = conesInPreviousMesh;
     scene.children.splice(3 + stepCount, 1);
     stepCount -= 1;
-  } else if (stepCount === 1 && e.key === "ArrowDown") {
-    conesInCurrentMesh = [firstCone];
   }
 });
 
