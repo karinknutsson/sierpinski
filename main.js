@@ -11,8 +11,8 @@ const sizes = {
 };
 
 // draw cones
-function drawCones(children) {
-  const cones = children.flat();
+function drawCones(cones) {
+  cones = cones.flat();
   const length = cones.length;
 
   const material = new THREE.MeshStandardMaterial({
@@ -138,31 +138,10 @@ function createChildren(cone) {
   return cones;
 }
 
-// recursive function for generating children according to amount of stepCount
-function generateChildArray(parents, stepCount) {
-  if (stepCount < 1) {
-    return;
-  }
-
-  const children = [];
-  parents.forEach((cones) =>
-    cones.forEach((cone) => children.push(createChildren(cone)))
-  );
-
-  drawCones(children);
-  generateChildArray(children, stepCount - 1);
-}
-
-// setup first cone & amount of stepCount
-function setupCones(stepCount) {
-  const parent = [[createCone(15, 30, 304, 0, -10, 0)]];
-  drawCones(parent);
-  generateChildArray(parent, stepCount);
-}
-
 // start building cones
 let stepCount = 1;
-setupCones(stepCount);
+const createdCones = [[createCone(15, 30, 304, 0, -10, 0)]];
+drawCones(createdCones);
 
 // light
 const highLight = new THREE.PointLight(0xffff00, 1, 100);
@@ -200,16 +179,17 @@ controls.autoRotateSpeed = 5;
 
 // keyboard controls for stepCount
 document.addEventListener("keydown", (e) => {
-  if (stepCount < 7 && e.key === "ArrowUp") {
+  if (stepCount < 8 && e.key === "ArrowUp") {
+    const children = [];
+    createdCones[stepCount - 1].forEach((cone) =>
+      children.push(createChildren(cone))
+    );
+    createdCones.push(children.flat());
+    drawCones(createdCones[stepCount]);
     stepCount += 1;
-    const filtered = scene.children.filter((child) => !child.isMesh);
-    scene.children = filtered;
-    setupCones(stepCount);
-  } else if (stepCount > 0 && e.key === "ArrowDown") {
+  } else if (stepCount > 1 && e.key === "ArrowDown") {
+    scene.children.splice(3 + stepCount, 1);
     stepCount -= 1;
-    const filtered = scene.children.filter((child) => !child.isMesh);
-    scene.children = filtered;
-    setupCones(stepCount);
   }
 });
 
